@@ -22,10 +22,10 @@ resources:
       skip_ssl_verification: true
 
   - name: pipeline_code
-      type: git
-      source:
-        uri: {{pipeline_code_repo}}
-        branch: {{pipeline_code_branch}}
+    type: git
+    source:
+      uri: {{pipeline_code_repo}}
+      branch: {{pipeline_code_branch}}
 
   - name: artifact_resource
     type: artifactory-resource
