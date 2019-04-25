@@ -1,0 +1,17 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source: { repository: maven, tag: 3.6.0-jdk-12 }
+
+inputs:
+  - name: pipeline_code
+  - name: source_code
+outputs:
+  - name: build
+
+caches:
+  - path: maven
+
+run:
+  path: pipeline_code/ci/02-build/maven.sh

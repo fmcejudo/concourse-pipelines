@@ -1,0 +1,114 @@
+---
+resource_types:
+  - name: artifactory-resource
+    type: docker-image
+    source:
+      repository: pivotalservices/artifactory-resource
+      tag: latest
+
+  - name: ansible
+    type: docker-image
+    source:
+      repository: platformengineering/concourse-ansible-resource
+      tag: latest
+
+resources:
+  - name: source_code
+    type: git
+    source:
+      uri: {{source_code_repo}}
+      branch: {{source_code_branch}}
+      private_key: {{source_code_private_key}}
+      skip_ssl_verification: true
+
+  - name: pipeline_code
+      type: git
+      source:
+        uri: {{pipeline_code_repo}}
+        branch: {{pipeline_code_branch}}
+
+  - name: artifact_resource
+    type: artifactory-resource
+    source:
+      endpoint: {{artifact_repo_uri}}
+      repository: {{artifact_repo_path}}
+      username: {{artifact_repo_username}}
+      password: {{artifact_repo_password}}
+      regex: {{ artifact_name_prefix }}"-(?<version>.*).jar"
+
+  - name: ansible-executor
+    type: ansible
+    source:
+      private_key: {{ansible_private_key}}
+      remote_user: {{ansible_user}}
+      inventory:
+        hosts: {{ ansible_hosts }}
+
+jobs:
+  - name: test
+    serial: true
+    public: true
+    plan:
+      - get: source_code
+        trigger: true
+      - get: pipeline_code
+      - task: run_test
+        privileged: true
+        file: pipeline_code/spring-boot-on-premise/ci/01-test/maven.yaml
+        input_mapping:
+          pipeline_code: pipeline_code/spring-boot-on-premise
+          source_code: source_code
+
+  - name: build
+    serial: true
+    public: true
+    plan:
+      - get: source_code
+        trigger: true
+        passed: [test]
+      - get: pipeline_code
+      - task: build_artifact
+        file: pipeline_code/spring-boot-on-premise/ci/02-build/maven.yaml
+        input_mapping:
+          pipeline_code: pipeline_code/spring-boot-on-premise
+          source_code: source_code
+      - put: artifact_resource
+        params:
+          file: ./build/((artifact_name))*.jar
+
+  - name: docker-build-image
+    serial: true
+    public: true
+    plan:
+      - get: artifact_resource
+        trigger: true
+        passed: [build]
+      - get: pipeline_code
+      - get: source_code
+      - task: create-docker-images
+        privileged: true
+        file: pipeline_code/spring-boot-on-premise/ci/03-docker-build/docker.yaml
+        input_mapping:
+          pipeline_code: pipeline_code/spring-boot-on-premise
+          source_code: source_code
+          artifact: artifact_resource
+        params:
+          ENVIRONMENT: ((environment))
+          REGISTRY: ((registry))
+
+
+  - name: deployment
+    serial: true
+    public: true
+    plan:
+      - get: source_code
+        trigger: true
+        passed: [docker-build-image]
+      - put: ansible-executor
+        params:
+          src: "source_code/ansible"
+          inventory:
+            file: "hosts"
+          playbook: "site.yaml"
+
+...

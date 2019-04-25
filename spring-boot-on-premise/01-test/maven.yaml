@@ -1,0 +1,28 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source: {
+    repository: framc83/dcind-jdk,
+    tag: 0.0.4
+  }
+
+inputs:
+  - name: pipeline_code
+  - name: source_code
+outputs:
+  - name: build
+
+caches:
+  - path: ~/.m2/repository
+
+run:
+  path: sh
+  args:
+    - -exc
+    - |
+      source /docker-lib.sh
+      start_docker
+      docker ps
+      docker-compose version
+      pipeline_code/ci/01-test/maven.sh

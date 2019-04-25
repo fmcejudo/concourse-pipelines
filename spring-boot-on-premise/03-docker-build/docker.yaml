@@ -1,0 +1,40 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source: {
+    repository: framc83/dcind-jdk,
+    tag: 0.0.4,
+    privileged: true
+  }
+
+inputs:
+  - name: pipeline_code
+  - name: source_code
+  - name: artifact
+
+run:
+  path: sh
+  args:
+    - -exc
+    - |
+      export DOCKER_OPTS=$DOCKER_OPTS" --insecure-registry $REGISTRY"
+      echo $DOCKER_OPTS
+
+      echo $ENVIRONMENT
+
+      mkdir -p /etc/docker
+
+      echo '{"insecure-registries":["$REGISTRY"]}' >> /etc/docker/daemon.json
+
+      cat /etc/docker/daemon.json
+
+      source /docker-lib.sh
+      start_docker
+
+      ping choopsjenkins -c 4
+
+      docker build -t $REGISTRY/auth-crewdock:latest -f pipeline_code/ci/03-docker-build/Dockerfile --build-arg ENVIRONMENT=$ENVIRONMENT .
+      docker tag $REGISTRY/auth-crewdock:latest $REGISTRY/auth-crewdock:latest
+      docker push $REGISTRY/auth-crewdock:latest
+...
