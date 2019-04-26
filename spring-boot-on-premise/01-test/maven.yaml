@@ -25,4 +25,4 @@ run:
       start_docker
       docker ps
       docker-compose version
-      pipeline_code/ci/01-test/maven.sh
+      pipeline_code/01-test/maven.sh

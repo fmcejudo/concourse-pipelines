@@ -34,7 +34,7 @@ run:
 
       ping choopsjenkins -c 4
 
-      docker build -t $REGISTRY/auth-crewdock:latest -f pipeline_code/ci/03-docker-build/Dockerfile --build-arg ENVIRONMENT=$ENVIRONMENT .
+      docker build -t $REGISTRY/auth-crewdock:latest -f pipeline_code/03-docker-build/Dockerfile --build-arg ENVIRONMENT=$ENVIRONMENT .
       docker tag $REGISTRY/auth-crewdock:latest $REGISTRY/auth-crewdock:latest
       docker push $REGISTRY/auth-crewdock:latest
 ...

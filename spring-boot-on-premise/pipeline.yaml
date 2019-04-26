@@ -26,6 +26,7 @@ resources:
     source:
       uri: {{pipeline_code_repo}}
       branch: {{pipeline_code_branch}}
+      skip_ssl_verification: true
 
   - name: artifact_resource
     type: artifactory-resource
@@ -34,7 +35,8 @@ resources:
       repository: {{artifact_repo_path}}
       username: {{artifact_repo_username}}
       password: {{artifact_repo_password}}
-      regex: {{ artifact_name_prefix }}"-(?<version>.*).jar"
+      regex: '{{artifact_name_prefix}}-(?<version>.*).jar'
+
 
   - name: ansible-executor
     type: ansible
@@ -42,7 +44,7 @@ resources:
       private_key: {{ansible_private_key}}
       remote_user: {{ansible_user}}
       inventory:
-        hosts: {{ ansible_hosts }}
+        hosts: {{ansible_hosts}}
 
 jobs:
   - name: test
@@ -54,7 +56,7 @@ jobs:
       - get: pipeline_code
       - task: run_test
         privileged: true
-        file: pipeline_code/spring-boot-on-premise/ci/01-test/maven.yaml
+        file: pipeline_code/spring-boot-on-premise/01-test/maven.yaml
         input_mapping:
           pipeline_code: pipeline_code/spring-boot-on-premise
           source_code: source_code
@@ -68,13 +70,13 @@ jobs:
         passed: [test]
       - get: pipeline_code
       - task: build_artifact
-        file: pipeline_code/spring-boot-on-premise/ci/02-build/maven.yaml
+        file: pipeline_code/spring-boot-on-premise/02-build/maven.yaml
         input_mapping:
           pipeline_code: pipeline_code/spring-boot-on-premise
           source_code: source_code
       - put: artifact_resource
         params:
-          file: ./build/((artifact_name))*.jar
+          file: ./build/((artifact_name_prefix))*.jar
 
   - name: docker-build-image
     serial: true
@@ -87,7 +89,7 @@ jobs:
       - get: source_code
       - task: create-docker-images
         privileged: true
-        file: pipeline_code/spring-boot-on-premise/ci/03-docker-build/docker.yaml
+        file: pipeline_code/spring-boot-on-premise/03-docker-build/docker.yaml
         input_mapping:
           pipeline_code: pipeline_code/spring-boot-on-premise
           source_code: source_code

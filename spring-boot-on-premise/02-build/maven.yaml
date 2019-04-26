@@ -14,4 +14,4 @@ caches:
   - path: maven
 
 run:
-  path: pipeline_code/ci/02-build/maven.sh
+  path: pipeline_code/02-build/maven.sh
