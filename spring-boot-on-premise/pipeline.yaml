@@ -44,7 +44,7 @@ resources:
       private_key: {{ansible_private_key}}
       remote_user: {{ansible_user}}
       inventory:
-        hosts: {{ansible_hosts}}
+        hosts: ((ansible_hosts))
 
 jobs:
   - name: test
