@@ -25,4 +25,4 @@ run:
       start_docker
       docker ps
       docker-compose version
-      pipeline_code/01-test/maven.sh
+      pipeline_code/spring-boot-on-premise/01-test/maven.sh

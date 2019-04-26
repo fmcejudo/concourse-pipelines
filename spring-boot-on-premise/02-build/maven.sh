@@ -14,3 +14,5 @@ echo "Generating symbolic links for caches"
 mvn package  -DskipTests ${MAVEN_ARGS}
 
 cp target/*.jar ../build/
+
+ls ../build

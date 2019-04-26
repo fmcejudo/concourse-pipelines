@@ -58,7 +58,7 @@ jobs:
         privileged: true
         file: pipeline_code/spring-boot-on-premise/01-test/maven.yaml
         input_mapping:
-          pipeline_code: pipeline_code/spring-boot-on-premise
+          pipeline_code: pipeline_code
           source_code: source_code
 
   - name: build
@@ -69,10 +69,12 @@ jobs:
         trigger: true
         passed: [test]
       - get: pipeline_code
+        trigger: true
+        passed: [test]
       - task: build_artifact
         file: pipeline_code/spring-boot-on-premise/02-build/maven.yaml
         input_mapping:
-          pipeline_code: pipeline_code/spring-boot-on-premise
+          pipeline_code: pipeline_code
           source_code: source_code
       - put: artifact_resource
         params:
@@ -86,12 +88,16 @@ jobs:
         trigger: true
         passed: [build]
       - get: pipeline_code
+        trigger: true
+        passed: [build]
       - get: source_code
+        trigger: true
+        passed: [build]
       - task: create-docker-images
         privileged: true
         file: pipeline_code/spring-boot-on-premise/03-docker-build/docker.yaml
         input_mapping:
-          pipeline_code: pipeline_code/spring-boot-on-premise
+          pipeline_code: pipeline_code
           source_code: source_code
           artifact: artifact_resource
         params:

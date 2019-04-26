@@ -14,4 +14,4 @@ caches:
   - path: maven
 
 run:
-  path: pipeline_code/02-build/maven.sh
+  path: pipeline_code/spring-boot-on-premise/02-build/maven.sh
