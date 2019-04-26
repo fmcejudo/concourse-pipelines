@@ -35,7 +35,7 @@ resources:
       repository: {{artifact_repo_path}}
       username: {{artifact_repo_username}}
       password: {{artifact_repo_password}}
-      regex: '{{artifact_name_prefix}}-(?<version>.*).jar'
+      regex: "((artifact_name_prefix))-(?<version>.*).jar"
 
 
   - name: ansible-executor
@@ -89,7 +89,6 @@ jobs:
         passed: [build]
       - get: pipeline_code
         trigger: true
-        passed: [build]
       - get: source_code
         trigger: true
         passed: [build]
@@ -101,7 +100,7 @@ jobs:
           source_code: source_code
           artifact: artifact_resource
         params:
-          ENVIRONMENT: ((environment))
+          ENVIRONMENT: ((deployment_environment))
           REGISTRY: ((registry))
 
 
