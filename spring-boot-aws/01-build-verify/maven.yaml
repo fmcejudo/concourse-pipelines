@@ -1,0 +1,14 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source: { repository: maven, tag: 3.6.0-jdk-11 }
+
+inputs:
+- name: source_code
+- name: pipeline_code
+outputs:
+- name: build
+
+run:
+  path: pipeline_code/spring-boot-aws/01-build-verify/maven.sh

@@ -1,0 +1,71 @@
+---
+resource_types:
+  - name: artifactory-resource
+    type: docker-image
+    source:
+      repository: pivotalservices/artifactory-resource
+      tag: latest
+
+resources:
+  - name: source_code
+    type: git
+    source:
+      uri: {{source_code_repo}}
+      branch: {{source_code_branch}}
+      username: {{source_code_username}}
+      password: {{source_code_password}}
+      skip_ssl_verification: true
+      
+  - name: pipeline_code
+    type: git
+    source:
+      uri: {{pipeline_code_repo}}
+      branch: {{pipeline_code_branch}}
+      skip_ssl_verification: true
+      
+  - name: artifact_resource
+    type: artifactory-resource
+    source:
+      endpoint: {{artifact_repo_uri}}
+      repository: {{artifact_repo_path}}
+      username: {{artifact_repo_username}}
+      password: {{artifact_repo_password}}
+      regex: "((artifact_name_prefix))-(?<version>.*).jar"
+
+jobs:
+  - name: maven-build
+    public: true
+    plan:
+      - get: source_code
+        trigger: true
+      - name: pipeline_code
+      - task: build
+        file: pipeline_code/spring-boot-aws/01-build-verify/maven.yaml
+        input_mapping:
+          source_code: source_code
+          pipeline_code: pipeline_source
+      - put: artifact_resource
+        params:
+          file: ./build/((artifact_name_prefix))-*.jar
+
+  - name: docker-build
+    plan:
+      - get: build_artifact_resource
+        trigger: true
+        passed: [maven-build]
+      - get: source_code
+        trigger: true
+        passed: [maven-build]
+      - task: create-docker-image
+        privileged: true
+        file: pipeline_code/spring-boot-aws/03-docker-build/docker-build.yaml
+        params:
+          AWS_ACCESS_KEY_ID: {{aws_access_key_id}}
+          AWS_SECRET_ACCESS_KEY: {{aws_secret_access_key}}
+          AWS_SESSION_TOKEN: {{aws_session_token}}
+          REGISTRY: ((registry))
+          ARTIFACT_NAME: ((artifact_name_prefix))
+        input_mapping:
+          source_code: source_code
+          pipeline_code: pipeline_code
+          artifact: build_artifact_resource
