@@ -32,6 +32,8 @@ run:
       source /docker-lib.sh
       start_docker
 
+
+      ping google.es -c 4
       ping choopsjenkins -c 4
 
       docker build -t $REGISTRY/auth-crewdock:latest -f pipeline_code/spring-boot-on-premise/03-docker-build/Dockerfile --build-arg ENVIRONMENT=$ENVIRONMENT .
