@@ -3,7 +3,7 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-     {repository: 'framc83/dcind-aws-cli', tag: '0.0.1', privileged: true}
+     {repository: 'framc83/dcind-aws-cli', tag: '0.0.2', privileged: true}
 
 inputs:
   - name: source_code
