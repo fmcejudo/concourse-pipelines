@@ -1,9 +1,12 @@
 #!/usr/bin/env sh
 
 
+ping google.es -c 4
+
 source /docker-lib.sh
 
 start_docker
+
 
 echo "docker has started with version "
 docker --version
