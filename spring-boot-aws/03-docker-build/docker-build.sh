@@ -14,4 +14,4 @@ docker build -t $ARTIFACT_NAME ./source_code
 
 docker tag $ARTIFACT_NAME:latest $REGISTRY/$ARTIFACT_NAME:latest
 
-docker push $ARTIFACT_NAME:latest $REGISTRY/$ARTIFACT_NAME:latest
+docker push $REGISTRY/$ARTIFACT_NAME:latest
