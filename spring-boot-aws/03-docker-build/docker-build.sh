@@ -5,6 +5,9 @@ source /docker-lib.sh
 
 start_docker
 
+ls artifact
+ls source_code
+
 $(aws ecr get-login --no-include-email --region eu-west-1)
 
 docker build -t $ARTIFACT_NAME ./source_code
