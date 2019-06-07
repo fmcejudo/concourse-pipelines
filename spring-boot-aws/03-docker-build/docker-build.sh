@@ -1,12 +1,13 @@
 #!/usr/bin/env sh
 
+iptables -A FORWARD -i docker0 -o eth0 -j ACCEPT
+iptables -A FORWARD -i eth0 -o docker0 -j ACCEPT
 
-ping google.es -c 4
+route add 172.22.0.0/16 10.34.34.250
 
 source /docker-lib.sh
 
 start_docker
-
 
 echo "docker has started with version "
 docker --version
