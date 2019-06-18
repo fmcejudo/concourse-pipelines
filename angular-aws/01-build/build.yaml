@@ -8,7 +8,7 @@ inputs:
 - name: source_code
 - name: pipeline_code
 outputs:
-- name: build
+- name: dist 
 
 run:
   path: pipeline_code/angular-aws/01-build/build.sh
