@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 cd source_code
-ls
 
-cat package.json
-sudo npm install 
-sudo npm install -g @angular/cli:7.3.6 > /dev/null
+npm install > /dev/null 
+npm install -g @angular/cli > /dev/null
+ng config -g cli.warnings.versionMismatch false
 
-ng build --prod
+ng --version
+ng build --prod > /dev/null
 
-cp dist/ ../dist/
+cp -r dist/ ../dist/
 
