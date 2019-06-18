@@ -1,0 +1,14 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source: { repository: node, tag: 8}
+
+inputs:
+- name: source_code
+- name: pipeline_code
+outputs:
+- name: build
+
+run:
+  path: pipeline_code/angular-aws/01-build/build.sh
