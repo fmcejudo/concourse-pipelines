@@ -9,5 +9,6 @@ ng config -g cli.warnings.versionMismatch false
 ng --version
 ng build --prod > /dev/null
 
-cp -r dist/ ../dist/
+tar -czvf ../build/dashboard-0.0.1-SNAPSHOT.tar.gz dist/
 
+ls ../build
