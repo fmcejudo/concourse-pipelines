@@ -5,10 +5,11 @@ image_resource:
   source: { repository: node, tag: 10.16.0, privileged: true}
 
 inputs:
-- name: source_code
-- name: pipeline_code
+  - name: source_code
+  - name: pipeline_code
+  
 outputs:
-- name: build 
+  - name: build 
 
 run:
   path: pipeline_code/angular-aws/01-build/build.sh
