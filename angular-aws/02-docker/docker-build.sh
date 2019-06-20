@@ -9,7 +9,7 @@ $(aws ecr get-login --no-include-email --region eu-west-1)
 
 ls source_code
 ls artifact
-tar -xvvf artifact/$ARTIFACT_NAME*.tar.gz -C source_code/
+tar -xvvf artifact/*.tar.gz -C source_code/
 
 ls source_code
 ls source_code/dist
